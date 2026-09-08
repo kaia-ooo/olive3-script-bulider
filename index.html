@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olive3 Script Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FBF9E6;
+    --panel: #FFFFFF;
+    --ink: #2A3B4D;
+    --ink-soft: #52667A;
+    --navy: #1F3A5C;
+    --blue: #3E71C4;
+    --blue-deep: #2A57A0;
+    --blue-soft: #E7EFFA;
+    --peach: #F4E0BE;
+    --peach-deep: #9C7A3E;
+    --sky: #6FB8D9;
+    --sky-deep: #1E7C9E;
+    --sky-soft: #E8F5FA;
+    --line: rgba(42,59,77,0.12);
+    --shadow: 0 4px 16px rgba(42,59,77,0.06);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:56px 24px 80px;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+    margin-bottom:40px;
+  }
+  header .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    color:var(--blue);
+    font-weight:700;
+    letter-spacing:.04em;
+  }
+  header .eyebrow::before{
+    content:"";
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--peach-deep);
+    box-shadow:0 0 0 3px var(--peach);
+  }
+  header h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:32px;
+    line-height:1.2;
+    letter-spacing:-.01em;
+    margin:10px 0 10px;
+    color:var(--blue);
+  }
+  .flow-trail{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--blue);
+  }
+  .flow-trail .arrow{
+    color:var(--ink-soft);
+    font-weight:400;
+  }
+  .flow-trail .flow-end{
+    color:var(--blue-deep);
+    background:var(--peach);
+    padding:3px 10px;
+    border-radius:20px;
+  }
+  .admin-toggle{
+    flex-shrink:0;
+    background:none;
+    border:1px solid var(--line);
+    border-radius:50%;
+    width:32px; height:32px;
+    padding:0;
+    font-size:13px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    opacity:0.55;
+    margin-top:2px;
+  }
+  .admin-toggle:hover{ opacity:1; }
+  .admin-toggle.on{
+    background:var(--blue);
+    border-color:var(--blue);
+    color:#fff;
+    opacity:1;
+  }
+
+  .step{ margin-bottom:28px; }
+  .step-head{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .step-num{
+    font-size:11px;
+    font-weight:700;
+    color:#fff;
+    background:var(--blue);
+    width:20px;height:20px;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .step-title{
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:-.01em;
+    color:var(--ink);
+    background:#F1EEDD;
+    padding:5px 12px;
+    border-radius:20px;
+  }
+  .step-sub{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:4px 0 10px 0;
+  }
+  .step-question{
+    display:block;
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
+    letter-spacing:-.01em;
+    margin:0 0 14px 0;
+  }
+
+  .chip-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .chip{
+    background:var(--panel);
+    border:1.5px solid var(--line);
+    border-radius:11px;
+    padding:12px 14px;
+    font-size:13px;
+    font-family:inherit;
+    cursor:pointer;
+    text-align:left;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    transition:border-color .15s ease, background .15s ease, box-shadow .15s ease;
+    color:var(--ink);
+  }
+  .chip:hover{ border-color:#C7D3DB; box-shadow:0 2px 8px rgba(27,46,61,0.06); }
+  .chip .chip-name{ display:flex; align-items:center; gap:6px; font-weight:700; }
+  .chip .chip-check{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:15px; height:15px;
+    border-radius:50%;
+    border:1.5px solid var(--line);
+    flex-shrink:0;
+    font-size:9px;
+    color:transparent;
+  }
+  .chip .chip-sub{
+    display:block;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    font-weight:400;
+    margin-top:4px;
+    margin-left:21px;
+  }
+  .chip.active{
+    border-color:var(--blue);
+    background:var(--blue-soft);
+  }
+  .chip.active .chip-name{ color:var(--blue-deep); }
+  .chip.active .chip-check{
+    background:var(--blue);
+    border-color:var(--blue);
+    color:#fff;
+  }
+  .chip.active .chip-sub{ color:var(--blue-deep); opacity:.8; }
+
+  @keyframes chipIn{
+    from{ opacity:0; transform:translateY(3px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  #angleRow .chip{ animation:chipIn .18s ease both; }
+  #angleRow .chip:nth-child(1){ animation-delay:0ms; }
+  #angleRow .chip:nth-child(2){ animation-delay:30ms; }
+  #angleRow .chip:nth-child(3){ animation-delay:60ms; }
+
+  .divider-line{
+    border:none;
+    border-top:1px solid var(--line);
+    margin:32px 0;
+  }
+
+  .output{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:6px 32px 28px;
+    box-shadow:var(--shadow);
+  }
+  .combo-row{ display:flex; gap:7px; flex-wrap:wrap; margin:22px 0 20px; }
+  .combo-tag{ font-size:10.5px; font-weight:700; padding:4px 11px; border-radius:20px; }
+  .combo-tag.type{ background:var(--peach); color:var(--peach-deep); }
+  .combo-tag.angle{ background:var(--blue-soft); color:var(--blue); }
+  .combo-tag.topic{ background:var(--sky-soft); color:var(--sky-deep); }
+
+  .hook-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:24px 26px;
+    margin-bottom:26px;
+  }
+  .mini-label{
+    display:inline-block;
+    background:var(--peach);
+    color:var(--peach-deep);
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.03em;
+    padding:5px 12px;
+    border-radius:20px;
+    margin-bottom:14px;
+  }
+  .generated-hook{
+    font-family:'Fraunces', serif;
+    font-style:normal;
+    font-weight:700;
+    font-size:25px;
+    line-height:1.4;
+    letter-spacing:-.01em;
+    margin:0;
+    color:#1B3D73;
+  }
+
+  .visual-block{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:18px 20px 6px;
+    margin-bottom:22px;
+  }
+  .visual-head{ font-size:13.5px; font-weight:700; color:var(--ink); margin-bottom:12px; }
+  .visual-ideas{ display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; }
+  .visual-idea{
+    text-align:left;
+    cursor:pointer;
+    font-family:inherit;
+    background:var(--panel);
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+    display:flex;
+    flex-direction:column;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .visual-idea:hover{ border-color:#C7D3DB; }
+  .visual-idea .idea-title{ display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; color:var(--ink); margin-bottom:5px; }
+  .visual-idea .idea-num{ color:var(--ink-soft); font-weight:600; }
+  .visual-idea .idea-desc{ font-size:12px; line-height:1.5; color:var(--ink-soft); margin:0 0 4px; }
+  .visual-idea .idea-note{ font-size:11px; font-style:italic; color:var(--ink-soft); }
+  .visual-idea .idea-note.idea-link{ font-style:normal; color:var(--blue); font-weight:600; }
+  .visual-idea .idea-image{ width:100%; border-radius:8px; margin-top:6px; display:block; }
+  .visual-idea.active{ border-color:var(--blue); background:var(--blue-soft); }
+  .visual-idea.active .idea-title{ color:var(--blue-deep); }
+  .visual-idea.active .idea-desc{ color:var(--ink); }
+  .visual-idea.active .chip-check{ background:var(--blue); border-color:var(--blue); color:#fff; }
+
+
+  .script-flow{ display:flex; flex-direction:column; }
+  .line{
+    display:grid;
+    grid-template-columns:120px 1fr;
+    gap:16px;
+    padding:13px 0 13px 14px;
+    border-left:3px solid var(--line);
+  }
+  .line + .line{ margin-top:2px; }
+  .line.auto{ border-left-color:var(--sky); }
+  .line.fixed{ border-left-color:var(--blue-deep); }
+  .line .role{ font-size:10.5px; font-weight:700; line-height:1.4; color:var(--ink); }
+  .line .role .tag{
+    display:block;
+    font-size:9.5px;
+    font-weight:600;
+    margin-top:3px;
+  }
+  .line.auto .role .tag{ color:var(--sky-deep); }
+  .line.fixed .role .tag{ color:var(--blue-deep); }
+  .line .text{ font-size:13.5px; line-height:1.6; color:var(--ink); }
+  .onscreen-label{ font-size:10.5px; font-weight:700; color:var(--ink-soft); margin:8px 0 4px; }
+  .onscreen-list{ margin:0; padding-left:16px; }
+  .onscreen-list li{ font-size:12px; line-height:1.6; color:var(--ink); }
+  img.emoji{ height:1em; width:1em; vertical-align:-0.15em; }
+
+  .actions{ margin-top:24px; display:flex; align-items:center; gap:14px; }
+  button.copy{
+    background:var(--blue);
+    color:#fff;
+    border:none;
+    border-radius:9px;
+    padding:12px 22px;
+    font-size:13.5px;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+    box-shadow:0 3px 10px rgba(46,93,166,0.25);
+  }
+  button.copy:hover{ background:var(--blue-deep); }
+  .copied-msg{ font-size:12.5px; color:var(--blue); font-weight:600; opacity:0; transition:opacity .2s ease; }
+  .copied-msg.show{ opacity:1; }
+
+  .note{
+    margin-top:22px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-size:11.5px;
+    color:var(--ink-soft);
+    line-height:1.65;
+  }
+
+  /* ── Admin panel ── */
+  #adminPanel{ margin-top:36px; }
+  .admin-block{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .admin-block summary{
+    cursor:pointer;
+    padding:15px 18px;
+    font-size:13.5px;
+    font-weight:700;
+    list-style:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .admin-block summary::-webkit-details-marker{ display:none; }
+  .admin-block summary::after{ content:"+"; color:var(--ink-soft); font-weight:400; }
+  .admin-block[open] summary::after{ content:"−"; }
+  .admin-body{ padding:0 18px 18px; }
+  .admin-item{
+    border-top:1px solid var(--line);
+    padding:16px 0;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  .admin-item:first-child{ border-top:none; }
+  .admin-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .admin-field{ display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px; }
+  .admin-field label{ font-size:10.5px; font-weight:700; color:var(--ink-soft); }
+  .admin-field input, .admin-field textarea{
+    font-family:inherit;
+    font-size:12.5px;
+    padding:8px 10px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    background:#FBFAF5;
+    color:var(--ink);
+    resize:vertical;
+  }
+  .admin-field input:focus, .admin-field textarea:focus{
+    outline:none;
+    border-color:var(--blue);
+    background:#fff;
+  }
+  .admin-checks{ display:flex; flex-wrap:wrap; gap:11px; margin-top:2px; }
+  .admin-checks label{
+    font-size:11.5px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    color:var(--ink);
+  }
+  .admin-remove{
+    align-self:flex-start;
+    background:none;
+    border:none;
+    color:#B5462F;
+    font-size:11.5px;
+    font-weight:700;
+    cursor:pointer;
+    padding:0;
+  }
+  .admin-add{
+    margin-top:10px;
+    background:none;
+    border:1.5px dashed var(--line);
+    border-radius:9px;
+    padding:9px 12px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--blue);
+    cursor:pointer;
+    width:100%;
+  }
+  .admin-io{ display:flex; gap:10px; margin-bottom:14px; }
+  .admin-io button, .admin-io label{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:10px 15px;
+    font-size:12.5px;
+    font-weight:700;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .admin-io input[type=file]{ display:none; }
+  code{ background:var(--peach); padding:1px 6px; border-radius:5px; font-size:11px; color:var(--peach-deep); }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <span class="eyebrow">OLIVE3 SCRIPT BUILDER</span>
+      <h1>Pick a Topic, Type, and Angle to build your script</h1>
+      <div class="flow-trail">
+        <span>01 Topic</span>
+        <span class="arrow">→</span>
+        <span>02 Hook Type</span>
+        <span class="arrow">→</span>
+        <span>03 Hook Angle</span>
+        <span class="arrow">→</span>
+        <span class="flow-end">✦ Your Script</span>
+      </div>
+    </div>
+    <button class="admin-toggle" id="adminToggleBtn" onclick="toggleAdmin()" title="Edit mode">⚙</button>
+  </header>
+
+  <div class="step" id="stepTopic">
+    <div class="step-head">
+      <span class="step-num">1</span>
+      <span class="step-title">Topic / Pain Point</span>
+    </div>
+    <p class="step-question">Which problem do you want to talk about?</p>
+    <div class="chip-row" id="topicRow"></div>
+  </div>
+
+  <div class="step" id="stepType">
+    <div class="step-head">
+      <span class="step-num">2</span>
+      <span class="step-title">Hook Type</span>
+    </div>
+    <p class="step-question">What do you want to say?</p>
+    <div class="chip-row" id="typeRow"></div>
+  </div>
+
+  <div class="step" id="stepAngle">
+    <div class="step-head">
+      <span class="step-num">3</span>
+      <span class="step-title">Hook Angle</span>
+    </div>
+    <p class="step-question">Choose the angle that best fits your hook.</p>
+    <div class="chip-row" id="angleRow"></div>
+  </div>
+
+  <hr class="divider-line">
+
+  <div class="output">
+    <div class="combo-row" id="comboRow"></div>
+    <div class="hook-card">
+      <span class="mini-label">Generated Hook</span>
+      <p class="generated-hook" id="generatedHook"></p>
+    </div>
+    <div class="visual-block">
+      <div class="visual-head">🎬 Intro Visual / Action</div>
+      <div class="visual-ideas" id="visualIdeas"></div>
+    </div>
+    <div class="script-flow" id="scriptFlow"></div>
+    <div class="actions">
+      <button class="copy" onclick="copyScript()">Copy script</button>
+      <span class="copied-msg" id="copiedMsg">Copied!</span>
+    </div>
+    <p class="note">Blue-bordered lines (Pain Point · Reframe · Problem) change automatically based on your Topic. Gold-bordered lines (⑤–⑫) always stay exactly the same, no matter what you pick.</p>
+  </div>
+
+  <div id="adminPanel" style="display:none;"></div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     Everything below is the content data. To change it, just
+     edit this JSON block — no other part of the file needs to
+     change. (You can also paste an exported JSON here directly,
+     replacing the whole block.)
+     ════════════════════════════════════════════════════════ -->
+<script id="site-data" type="application/json">
+{
+  "types": [
+    { "id":"A", "name":"Goal / Aspiration", "what":"Shows the result someone wants", "angles":["result","personal"] },
+    { "id":"B", "name":"Problem / Pain Point", "what":"Calls out a problem someone has right now", "angles":["problem","curiosity","personal"] },
+    { "id":"C", "name":"Celebrity / Trend", "what":"Grabs attention with a trend or well-known idea", "angles":["trend","secret","curiosity"] },
+    { "id":"D", "name":"Myth Busting / Reframe", "what":"Flips a common belief on its head", "angles":["contrarian","reframe","education"] },
+    { "id":"E", "name":"Reverse Psychology", "what":"Says the opposite to spark curiosity", "angles":["reverse","curiosity"] }
+  ],
+  "introVisualIdeas": [
+    { "num":"01", "title":"Result / Before-After", "desc":"Show the desired result first, then reveal the before.", "note":"\"Do you want results like this?\"", "image":"" },
+    { "num":"02", "title":"Olive Oil vs. Olive3", "desc":"Compare a small shot of olive oil with 3 Olive3 capsules.", "note":"→ Reference image", "image":"" },
+    { "num":"03", "title":"Product-first", "desc":"Hold Olive3 up or tear open the packet in the first 3 seconds.", "note":"→ Reference image", "image":"" }
+  ],
+  "angles": {
+    "result":     { "name":"Result",     "template":"Want {result}?" },
+    "personal":   { "name":"Personal",   "template":"I wanted {result}, so I started…" },
+    "problem":    { "name":"Problem",    "template":"{problemQuestion}" },
+    "curiosity":  { "name":"Curiosity",  "template":"I started {action}, but not the way you think." },
+    "trend":      { "name":"Trend",      "template":"Everyone is talking about {trend}…" },
+    "secret":     { "name":"Secret",     "template":"Here's what {who} are doing differently." },
+    "contrarian": { "name":"Contrarian", "template":"You don't need {oldWay}." },
+    "reframe":    { "name":"Reframe",    "template":"{resultSubject} might not start with {oldWay}." },
+    "education":  { "name":"Education",  "template":"Here's why {oldWay} isn't the only way to get {result}." },
+    "reverse":    { "name":"Reverse",    "template":"Don't {avoidAction} until you hear this." }
+  },
+  "topics": [
+    {
+      "id":"skin-glow", "icon":"✨", "label":"Skin & Glow",
+      "painPoint":"My skin kept looking dull and tired, even when I was using good skincare…",
+      "reframe":"So I started looking beyond skincare and paying more attention to my daily routine.",
+      "problem":"I wanted the benefits of olive oil for my skin, but I definitely didn't want to drink a spoonful every morning.",
+      "fomo":"If you're chasing that glazed-skin glow, this is definitely one to add to your routine.",
+      "functionalProof":{
+        "line":"Three Mediterranean olive extracts, not just one — with polyphenols and oleocanthal to support healthier, glowing-looking skin.",
+        "onScreen":["🇬🇷 Polyphenols — Antioxidant / Healthy Aging","🇮🇹 Oleocanthal — Skin / Glow","🇪🇸 Oleic Acid — Healthy Fats"]
+      }
+    },
+    {
+      "id":"oil-hassle", "icon":"🫒", "label":"Olive Oil Without the Hassle",
+      "painPoint":"I wanted to add olive oil to my routine, but drinking a spoonful every morning was not happening…",
+      "reframe":"So I started looking for a more convenient way to make olive oil part of my day.",
+      "problem":"I wanted the benefits of olive oil without the taste, mess, or hassle of drinking it straight.",
+      "fomo":"If you want the benefits of olive oil without the spoonful every morning, this is worth checking out.",
+      "functionalProof":{
+        "line":"Three Mediterranean olive extracts, not just one — bringing different benefits together in one simple routine.",
+        "onScreen":["🇬🇷 Polyphenols — Antioxidant","🇮🇹 Oleocanthal — Skin Support","🇪🇸 Oleic Acid — Gut & Heart Health"]
+      }
+    },
+    {
+      "id":"gut-bloating", "icon":"🌱", "label":"Gut & Bloating",
+      "painPoint":"My stomach could look completely flat in the morning and so much puffier by the end of the day…",
+      "reframe":"So instead of constantly trying quick fixes, I started looking at my daily routine.",
+      "problem":"I wanted to make olive oil part of my routine, but drinking it straight every morning was not for me.",
+      "fomo":"If you're looking for a simpler way to support your gut-health routine, this is worth a look.",
+      "functionalProof":{
+        "line":"Three Mediterranean olive extracts, not just one — with oleic acid to support a healthier gut and digestion.",
+        "onScreen":["🇬🇷 Polyphenols — Antioxidant","🇮🇹 Oleocanthal — Gut Support","🇪🇸 Oleic Acid — Gut & Digestion"]
+      }
+    },
+    {
+      "id":"appetite-cravings", "icon":"🍽️", "label":"Appetite & Cravings",
+      "painPoint":"I wanted to lose weight, but staying on track was so hard when I was thinking about food and snacks all day…",
+      "reframe":"So instead of blaming my willpower, I started looking at how I was starting my mornings.",
+      "problem":"I wanted a more satisfying way to start my day, so I started adding healthy fats to my morning routine instead of reaching for another carb-heavy breakfast.",
+      "fomo":"If you're trying to stay on track with your diet without constantly fighting cravings, this is one to try.",
+      "functionalProof":{
+        "line":"Three Mediterranean olive extracts, not just one — including healthy fats from oleic acid to support a more satisfying morning.",
+        "onScreen":["🇬🇷 Polyphenols — Antioxidant","🇮🇹 Oleocanthal — Wellness Support","🇪🇸 Oleic Acid — Healthy Fats"]
+      }
+    },
+    {
+      "id":"double-chin", "icon":"🪞", "label":"Double Chin & Puffy Face",
+      "painPoint":"My face always looked so much puffier in photos, and my jawline seemed to disappear…",
+      "reframe":"So instead of chasing another quick fix, I started looking at my everyday routine.",
+      "problem":"I wanted to support a less-puffy, more defined-looking face, so I started paying more attention to what I was putting into my daily routine.",
+      "fomo":"If you want a less-puffy, more defined-looking face, this is worth adding to your routine.",
+      "functionalProof":{
+        "line":"Three Mediterranean olive extracts, not just one — with olive compounds that support a less puffy-looking face.",
+        "onScreen":["🇬🇷 Polyphenols — Healthy Aging","🇮🇹 Oleocanthal — Skin Support","🇪🇸 Oleic Acid — Healthy Fats"]
+      }
+    }
+  ],
+  "hookLibrary": {
+    "A": {
+      "result": {
+        "skin-glow":"Want that glazed-skin glow?",
+        "oil-hassle":"Want the benefits of olive oil without drinking it by the spoonful?",
+        "gut-bloating":"Want a flatter-looking stomach without all the puffiness?",
+        "appetite-cravings":"Want to stay on track with your diet without fighting cravings all day?",
+        "double-chin":"Want a more defined-looking face and jawline?"
+      },
+      "personal": {
+        "skin-glow":"I wanted that glazed-skin look, so I started looking beyond skincare.",
+        "oil-hassle":"I wanted the benefits of olive oil, but I hated drinking it every morning.",
+        "gut-bloating":"I wanted my stomach to look less puffy by the end of the day, so I changed my routine.",
+        "appetite-cravings":"I wanted to lose weight, but staying on track was impossible when I was craving snacks all day.",
+        "double-chin":"I wanted my face to look less puffy and my jawline more defined, so I changed my routine."
+      }
+    },
+    "B": {
+      "problem": {
+        "skin-glow":"Why does my skin look so dull by the afternoon?",
+        "oil-hassle":"Why does taking olive oil every morning have to be so unpleasant?",
+        "gut-bloating":"Why does my stomach look flat in the morning and so much puffier by night?",
+        "appetite-cravings":"Trying to lose weight but your cravings keep ruining your diet?",
+        "double-chin":"Why does my face look so puffy and my jawline disappear in photos?"
+      },
+      "curiosity": {
+        "skin-glow":"I changed one thing for my skin, and it wasn't another serum.",
+        "oil-hassle":"I started taking olive oil every morning, but definitely not with a spoon.",
+        "gut-bloating":"I changed one thing in my routine because my stomach kept getting so puffy.",
+        "appetite-cravings":"I changed one thing about my mornings, and suddenly sticking to my diet felt easier.",
+        "double-chin":"I changed one thing in my routine because my face kept looking so puffy."
+      },
+      "personal": {
+        "skin-glow":"My skin kept looking dull, so I started changing what I did beyond skincare.",
+        "oil-hassle":"I wanted olive oil in my routine, but I couldn't stand drinking it.",
+        "gut-bloating":"My stomach would get so bloated by the end of the day, so I started simplifying my routine.",
+        "appetite-cravings":"I could stick to my diet all day… until the cravings hit.",
+        "double-chin":"My face always looked extra puffy and my jawline less defined, so I started changing my routine."
+      }
+    },
+    "C": {
+      "trend": {
+        "skin-glow":"Everyone's talking about glazed skin right now.",
+        "oil-hassle":"Everyone's putting olive oil into their wellness routine right now.",
+        "gut-bloating":"Everyone's talking about getting a flatter, less-puffy stomach right now.",
+        "appetite-cravings":"Everyone's looking for ways to stay satisfied and stay on track with their diet.",
+        "double-chin":"Everyone's talking about a more defined-looking face and jawline right now."
+      },
+      "secret": {
+        "skin-glow":"Here's what people chasing that glazed-skin look are adding to their routine.",
+        "oil-hassle":"Here's how people are making olive oil part of their routine without the spoonful.",
+        "gut-bloating":"Here's what people with a flatter-looking stomach are adding to their daily routine.",
+        "appetite-cravings":"Here's what people who actually stay on track with their diet are doing differently in the morning.",
+        "double-chin":"Here's what people with a more defined-looking jawline are adding to their routine."
+      },
+      "curiosity": {
+        "skin-glow":"I started changing my skincare routine, but the biggest change wasn't skincare.",
+        "oil-hassle":"I started taking olive oil every morning, but not in the way you'd expect.",
+        "gut-bloating":"I started changing my routine because my stomach kept looking more bloated by nighttime.",
+        "appetite-cravings":"I started changing my mornings, but the biggest difference showed up later in the day.",
+        "double-chin":"I started changing my routine because my face kept looking more swollen."
+      }
+    },
+    "D": {
+      "contrarian": {
+        "skin-glow":"You don't need another skincare product for that glazed-skin look.",
+        "oil-hassle":"You don't have to drink a spoonful of olive oil every morning.",
+        "gut-bloating":"You don't need another complicated gut-health routine.",
+        "appetite-cravings":"You don't need more willpower to stick to your diet.",
+        "double-chin":"You don't need another face roller or jawline gadget."
+      },
+      "reframe": {
+        "skin-glow":"Your glow-up might not start with another skincare product.",
+        "oil-hassle":"Your olive oil routine doesn't have to start with a spoon.",
+        "gut-bloating":"A flatter-looking stomach isn't always about eating less or doing more.",
+        "appetite-cravings":"Your afternoon cravings might actually start with your morning routine.",
+        "double-chin":"A more defined-looking face isn't always about another face tool."
+      },
+      "education": {
+        "skin-glow":"If you want that glazed-skin look, your routine isn't just about what you put on your skin.",
+        "oil-hassle":"There's more than one way to make olive oil part of your daily routine.",
+        "gut-bloating":"If your stomach gets noticeably puffier throughout the day, your daily routine may be worth looking at.",
+        "appetite-cravings":"Starting your morning with protein and healthy fats can help support a more satisfying day.",
+        "double-chin":"If your face looks noticeably puffier throughout the day, your daily routine may be worth looking at."
+      }
+    },
+    "E": {
+      "reverse": {
+        "skin-glow":"Don't buy another skincare product until you hear this.",
+        "oil-hassle":"Don't force down another spoonful of olive oil until you see this.",
+        "gut-bloating":"Don't just accept looking twice as bloated by nighttime.",
+        "appetite-cravings":"Don't start another diet until you fix your mornings.",
+        "double-chin":"Don't buy another jawline gadget until you hear this."
+      },
+      "curiosity": {
+        "skin-glow":"I stopped adding more skincare, and that's when I started thinking differently about my glow.",
+        "oil-hassle":"I stopped taking olive oil the traditional way, and it changed my entire routine.",
+        "gut-bloating":"I stopped ignoring how much bigger my stomach looked by the end of the day.",
+        "appetite-cravings":"I stopped blaming my willpower and started looking at how I began my mornings.",
+        "double-chin":"I stopped blaming my jawline and started looking at my routine differently."
+      }
+    }
+  },
+  "fixedSteps": [
+    { "num":"⑤", "role":"PRODUCT REVEAL", "line":"That's when I found Olive3 by OLLOCDAM." },
+    { "num":"⑥", "role":"CORE BENEFIT", "line":"It's made with olive extracts from three Mediterranean countries…" },
+    { "num":"⑧", "role":"PRODUCT EXPERIENCE", "line":"They're individually packed capsules, so I can just take them in the morning." },
+    { "num":"⑨", "role":"DIFFERENTIATOR", "line":"Each capsule is individually packed to help protect the olive extracts from oxidation and keep them fresh." },
+    { "num":"⑩", "role":"SOCIAL PROOF", "line":"Olive oil has been part of wellness routines for years, even among celebrities — but you don't have to drink it by the spoonful." },
+    { "num":"⑫", "role":"CTA", "line":"Go check it out before it sells out." }
+  ]
+}
+</script>
+
+<script>
+// ══════════════════════════════════════════════════════
+// DATA — loaded from the <script id="site-data"> block above.
+// Everything in the Edit mode admin panel modifies these.
+// ══════════════════════════════════════════════════════
+
+let types = [];
+let angles = {};
+let topics = [];
+let fixedSteps = [];
+let hookLibrary = {};
+let introVisualIdeas = [];
+
+(function loadEmbeddedData(){
+  const el = document.getElementById('site-data');
+  if(!el) return;
+  try{
+    const data = JSON.parse(el.textContent);
+    types = data.types || [];
+    angles = data.angles || {};
+    topics = data.topics || [];
+    fixedSteps = data.fixedSteps || [];
+    hookLibrary = data.hookLibrary || {};
+    introVisualIdeas = data.introVisualIdeas || [];
+  }catch(err){
+    alert('There was a problem loading the site data. Please check the JSON in the site-data block.');
+  }
+})();
+
+// Field labels shown in the admin form for each Topic.
+const topicFieldDefs = [
+  ['label','Label'], ['icon','Icon'],
+  ['painPoint','② PAIN POINT line'],
+  ['reframe','③ REFRAME line'],
+  ['problem','④ PROBLEM line (full sentence)'],
+  ['fomo','⑪ FOMO line (full sentence)']
+];
+
+let state = { type:'A', angle:'result', topic:'skin-glow' };
+let adminMode = false;
+let adminUnlocked = false;
+const ADMIN_PASSCODE = 'olive3admin'; // change this value to change the edit-mode passcode
+
+// ══════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════
+
+function generateHook(typeId, angleKey, topicId){
+  const hook = hookLibrary[typeId] && hookLibrary[typeId][angleKey] && hookLibrary[typeId][angleKey][topicId];
+  return hook || '(no hook written yet for this combination — add one in the Hook Library section of Edit mode)';
+}
+function esc(str){
+  return String(str == null ? '' : str).replace(/"/g, '&quot;');
+}
+
+// ══════════════════════════════════════════════════════
+// MAIN SELECTOR RENDER (Steps 1–3 + output)
+// ══════════════════════════════════════════════════════
+
+function renderTypeRow(){
+  document.getElementById('typeRow').innerHTML = types.map(t => `
+    <button class="chip ${t.id===state.type?'active':''}" onclick="selectType('${t.id}')">
+      <span class="chip-name"><span class="chip-check">✓</span>${t.name}</span>
+      <span class="chip-sub">${t.what}</span>
+    </button>
+  `).join('');
+}
+
+function renderAngleRow(){
+  const type = types.find(t => t.id === state.type);
+  if(!type) return;
+  document.getElementById('angleRow').innerHTML = type.angles.filter(k=>angles[k]).map(key => {
+    const a = angles[key];
+    return `<button class="chip ${key===state.angle?'active':''}" onclick="selectAngle('${key}')">
+        <span class="chip-name"><span class="chip-check">✓</span>${a.name}</span>
+        <span class="chip-sub">${a.template}</span>
+      </button>`;
+  }).join('');
+}
+
+function renderTopicRow(){
+  document.getElementById('topicRow').innerHTML = topics.map(tp => `
+    <button class="chip ${tp.id===state.topic?'active':''}" onclick="selectTopic('${tp.id}')">
+      <span class="chip-name"><span class="chip-check">✓</span>${tp.icon} ${tp.label}</span>
+    </button>
+  `).join('');
+}
+
+function renderOutput(){
+  const type = types.find(t => t.id === state.type);
+  const angle = angles[state.angle];
+  const topic = topics.find(tp => tp.id === state.topic);
+  if(!type || !angle || !topic) return;
+
+  document.getElementById('comboRow').innerHTML = `
+    <span class="combo-tag topic">Topic: ${topic.icon} ${topic.label}</span>
+    <span class="combo-tag type">Type: ${type.name}</span>
+    <span class="combo-tag angle">Angle: ${angle.name}</span>
+  `;
+
+  document.getElementById('generatedHook').textContent = generateHook(state.type, state.angle, state.topic);
+
+  const rows = [
+    { role:'PAIN POINT', tag:'Auto from Topic', cls:'auto', text: topic.painPoint },
+    { role:'REFRAME', tag:'Auto from Topic', cls:'auto', text: topic.reframe },
+    { role:'PROBLEM', tag:'Auto from Topic', cls:'auto', text: topic.problem },
+    ...fixedSteps.slice(0,2).map(s => ({ role:`${s.num} ${s.role}`, tag:'Fixed', cls:'fixed', text:s.line })),
+    { role:'⑦ FUNCTIONAL PROOF', tag:'Auto from Topic', cls:'auto', text: topic.functionalProof.line, extra: topic.functionalProof.onScreen },
+    ...fixedSteps.slice(2,5).map(s => ({ role:`${s.num} ${s.role}`, tag:'Fixed', cls:'fixed', text:s.line })),
+    { role:'⑪ FOMO', tag:'Auto from Topic', cls:'auto', text: topic.fomo },
+    ...fixedSteps.slice(5).map(s => ({ role:`${s.num} ${s.role}`, tag:'Fixed', cls:'fixed', text:s.line }))
+  ];
+
+  document.getElementById('scriptFlow').innerHTML = rows.map(r => `
+    <div class="line ${r.cls}">
+      <div class="role">${r.role}<span class="tag">${r.tag}</span></div>
+      <div class="text">${r.text}${r.extra ? `
+        <div class="onscreen-label">On-screen text</div>
+        <ul class="onscreen-list">${r.extra.map(x=>`<li>${x}</li>`).join('')}</ul>` : ''}</div>
+    </div>
+  `).join('');
+
+  if(window.twemoji) twemoji.parse(document.getElementById('scriptFlow'), { folder:'svg', ext:'.svg' });
+}
+
+// Fixed guide, shown as-is regardless of Type/Angle/Topic selection.
+let introVisualSelected = null;
+
+function selectIntroVisual(i){
+  introVisualSelected = (introVisualSelected === i) ? null : i;
+  renderIntroVisual();
+}
+
+function renderIntroVisual(){
+  document.getElementById('visualIdeas').innerHTML = introVisualIdeas.map((idea, i) => {
+    const isLink = (idea.note||'').trim().startsWith('→');
+    return `
+    <button class="visual-idea ${introVisualSelected===i?'active':''}" onclick="selectIntroVisual(${i})">
+      <div class="idea-title"><span class="chip-check">✓</span><span class="idea-num">${idea.num}</span>${idea.title}</div>
+      <p class="idea-desc">${idea.desc}</p>
+      ${idea.image ? `<img class="idea-image" src="${idea.image}" alt="${idea.title} reference">` : ''}
+      ${idea.note && !idea.image ? `<p class="idea-note ${isLink?'idea-link':''}">${idea.note}</p>` : ''}
+    </button>
+  `;
+  }).join('');
+}
+
+function renderAll(){ renderTypeRow(); renderAngleRow(); renderTopicRow(); renderOutput(); renderIntroVisual(); }
+
+function selectType(id){
+  state.type = id;
+  const type = types.find(t => t.id === id);
+  if(type && !type.angles.includes(state.angle)) state.angle = type.angles[0];
+  renderTypeRow(); renderAngleRow(); renderOutput();
+}
+function selectAngle(key){ state.angle = key; renderAngleRow(); renderOutput(); }
+function selectTopic(id){ state.topic = id; renderTopicRow(); renderOutput(); }
+
+function copyScript(){
+  const type = types.find(t => t.id === state.type);
+  const angle = angles[state.angle];
+  const topic = topics.find(tp => tp.id === state.topic);
+  if(!type || !angle || !topic) return;
+
+  let text = `[Topic: ${topic.label} / Type: ${type.name} / Angle: ${angle.name}]\n`;
+  text += `[① HOOK]\n${generateHook(state.type, state.angle, state.topic)}\n\n`;
+  text += `[② PAIN POINT]\n${topic.painPoint}\n\n`;
+  text += `[③ REFRAME]\n${topic.reframe}\n\n`;
+  text += `[④ PROBLEM]\n${topic.problem}\n\n`;
+  fixedSteps.slice(0,2).forEach(s => { text += `[${s.num} ${s.role}]\n${s.line}\n\n`; });
+  text += `[⑦ FUNCTIONAL PROOF]\n${topic.functionalProof.line}\nOn-screen text:\n${topic.functionalProof.onScreen.map(x=>`- ${x}`).join('\n')}\n\n`;
+  fixedSteps.slice(2,5).forEach(s => { text += `[${s.num} ${s.role}]\n${s.line}\n\n`; });
+  text += `[⑪ FOMO]\n${topic.fomo}\n\n`;
+  fixedSteps.slice(5).forEach(s => { text += `[${s.num} ${s.role}]\n${s.line}\n\n`; });
+
+  navigator.clipboard.writeText(text.trim()).then(()=>{
+    const msg = document.getElementById('copiedMsg');
+    msg.classList.add('show');
+    setTimeout(()=>msg.classList.remove('show'), 1600);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// ADMIN PANEL — edit all data
+// ══════════════════════════════════════════════════════
+
+function toggleAdmin(){
+  if(!adminMode && !adminUnlocked){
+    const pw = prompt('Enter the edit-mode passcode');
+    if(pw === null) return;
+    if(pw !== ADMIN_PASSCODE){ alert('Wrong passcode.'); return; }
+    adminUnlocked = true;
+  }
+  adminMode = !adminMode;
+  document.getElementById('adminToggleBtn').classList.toggle('on', adminMode);
+  document.getElementById('adminPanel').style.display = adminMode ? 'block' : 'none';
+  if(adminMode) renderAdmin();
+}
+
+function renderAdmin(){
+  const panel = document.getElementById('adminPanel');
+  panel.innerHTML = `
+    <p style="font-size:11.5px; color:var(--ink-soft); line-height:1.6; margin:0 0 12px;">
+      Changes here apply <b>only in this browser tab</b>. To update the live site creators see:
+      click <b>Export</b> below, then paste that JSON over the whole <code>&lt;script id="site-data"&gt;</code> block in index.html on GitHub, and commit.
+    </p>
+    <div class="admin-io">
+      <button onclick="exportData()">⬇ Export (JSON)</button>
+      <label>⬆ Import (preview only)<input type="file" accept="application/json" onchange="importData(event)"></label>
+    </div>
+
+    <details class="admin-block" open>
+      <summary>① Hook Type (${types.length})</summary>
+      <div class="admin-body">${renderTypeAdmin()}
+        <button class="admin-add" onclick="addType()">+ Add Hook Type</button>
+      </div>
+    </details>
+
+    <details class="admin-block">
+      <summary>② Hook Angle (${Object.keys(angles).length})</summary>
+      <div class="admin-body">${renderAngleAdmin()}
+        <button class="admin-add" onclick="addAngle()">+ Add Hook Angle</button>
+      </div>
+    </details>
+
+    <details class="admin-block">
+      <summary>③ Topic / Pain Point (${topics.length})</summary>
+      <div class="admin-body">${renderTopicAdmin()}
+        <button class="admin-add" onclick="addTopic()">+ Add Topic</button>
+      </div>
+    </details>
+
+    <details class="admin-block">
+      <summary>Hook Library — every generated Hook line</summary>
+      <div class="admin-body">${renderHookLibraryAdmin()}</div>
+    </details>
+
+    <details class="admin-block">
+      <summary>🎬 Intro Visual / Action guide (${introVisualIdeas.length})</summary>
+      <div class="admin-body">${renderIntroVisualAdmin()}
+        <button class="admin-add" onclick="addIntroVisual()">+ Add idea</button>
+      </div>
+    </details>
+
+    <details class="admin-block">
+      <summary>⑤–⑫ Fixed script (${fixedSteps.length})</summary>
+      <div class="admin-body">
+        <p style="font-size:11px; color:var(--ink-soft); margin:0 0 10px;">⑦ FUNCTIONAL PROOF and ⑪ FOMO aren't here — they're Topic-dependent now, so edit them in the ③ Topic / Pain Point section above.</p>
+        ${renderFixedAdmin()}
+        <button class="admin-add" onclick="addFixed()">+ Add fixed step</button>
+      </div>
+    </details>
+  `;
+}
+
+function renderIntroVisualAdmin(){
+  return introVisualIdeas.map((idea, i) => `
+    <div class="admin-item">
+      <div class="admin-row">
+        <div class="admin-field" style="max-width:60px;">
+          <label>No.</label>
+          <input value="${esc(idea.num)}" data-model="intro-visual" data-idx="${i}" data-field="num" oninput="handleFieldInput(event)">
+        </div>
+        <div class="admin-field">
+          <label>Title</label>
+          <input value="${esc(idea.title)}" data-model="intro-visual" data-idx="${i}" data-field="title" oninput="handleFieldInput(event)">
+        </div>
+      </div>
+      <div class="admin-field">
+        <label>Description</label>
+        <textarea rows="2" data-model="intro-visual" data-idx="${i}" data-field="desc" oninput="handleFieldInput(event)">${esc(idea.desc)}</textarea>
+      </div>
+      <div class="admin-field">
+        <label>Note (quote, or "→ Reference image" — hidden once an image is set below)</label>
+        <input value="${esc(idea.note)}" data-model="intro-visual" data-idx="${i}" data-field="note" oninput="handleFieldInput(event)">
+      </div>
+      <div class="admin-field">
+        <label>Reference image URL (paste any public image link, or a path to an image you added to this GitHub repo)</label>
+        <input placeholder="https://... or images/example.jpg" value="${esc(idea.image)}" data-model="intro-visual" data-idx="${i}" data-field="image" oninput="handleFieldInput(event)">
+      </div>
+      <button class="admin-remove" onclick="removeIntroVisual(${i})">Delete this idea</button>
+    </div>
+  `).join('');
+}
+
+function renderTypeAdmin(){
+  return types.map((t, i) => `
+    <div class="admin-item">
+      <div class="admin-row">
+        <div class="admin-field" style="max-width:60px;">
+          <label>ID</label>
+          <input value="${esc(t.id)}" data-model="type" data-idx="${i}" data-field="id" oninput="handleFieldInput(event)">
+        </div>
+        <div class="admin-field">
+          <label>Name</label>
+          <input value="${esc(t.name)}" data-model="type" data-idx="${i}" data-field="name" oninput="handleFieldInput(event)">
+        </div>
+        <div class="admin-field">
+          <label>What it says</label>
+          <input value="${esc(t.what)}" data-model="type" data-idx="${i}" data-field="what" oninput="handleFieldInput(event)">
+        </div>
+      </div>
+      <div class="admin-checks">
+        ${Object.keys(angles).map(key => `
+          <label><input type="checkbox" data-model="type-angle" data-idx="${i}" data-angle="${key}"
+            ${t.angles.includes(key)?'checked':''} onchange="handleTypeAngleToggle(event)"> ${angles[key].name}</label>
+        `).join('')}
+      </div>
+      <button class="admin-remove" onclick="removeType(${i})">Delete this Hook Type</button>
+    </div>
+  `).join('');
+}
+
+function renderAngleAdmin(){
+  return Object.keys(angles).map(key => {
+    const a = angles[key];
+    return `
+    <div class="admin-item">
+      <div class="admin-row">
+        <div class="admin-field" style="max-width:100px;">
+          <label>Key</label>
+          <input value="${esc(key)}" data-model="angle-key" data-oldkey="${key}" onchange="handleAngleKeyChange(event)">
+        </div>
+        <div class="admin-field">
+          <label>Name</label>
+          <input value="${esc(a.name)}" data-model="angle" data-idx="${key}" data-field="name" oninput="handleFieldInput(event)">
+        </div>
+      </div>
+      <div class="admin-field">
+        <label>Template ({fieldName} is auto-filled from the selected Topic)</label>
+        <input value="${esc(a.template)}" data-model="angle" data-idx="${key}" data-field="template" oninput="handleFieldInput(event)">
+      </div>
+      <button class="admin-remove" onclick="removeAngle('${key}')">Delete this Angle</button>
+    </div>`;
+  }).join('');
+}
+
+function renderHookLibraryAdmin(){
+  return types.map(t => `
+    <details class="admin-block" style="margin:10px 0;">
+      <summary style="padding:10px 14px; font-size:12.5px;">${t.id}. ${t.name}</summary>
+      <div class="admin-body" style="padding:0 14px 14px;">
+        ${t.angles.filter(k=>angles[k]).map(angleKey => `
+          <p style="font-size:11.5px; font-weight:700; color:var(--ink-soft); margin:14px 0 6px;">Angle: ${angles[angleKey] ? angles[angleKey].name : angleKey}</p>
+          ${topics.map(tp => `
+            <div class="admin-row" style="align-items:center; margin-bottom:6px;">
+              <div class="admin-field" style="max-width:170px; flex:0 0 170px;">
+                <label>${tp.icon} ${tp.label}</label>
+              </div>
+              <div class="admin-field">
+                <input value="${esc((hookLibrary[t.id] && hookLibrary[t.id][angleKey] && hookLibrary[t.id][angleKey][tp.id]) || '')}"
+                  data-model="hook" data-type="${t.id}" data-angle="${angleKey}" data-topic="${tp.id}" oninput="handleFieldInput(event)">
+              </div>
+            </div>
+          `).join('')}
+        `).join('')}
+      </div>
+    </details>
+  `).join('');
+}
+
+function renderTopicAdmin(){
+  return topics.map((tp, i) => `
+    <div class="admin-item">
+      <div class="admin-row">
+        ${topicFieldDefs.map(([field,label]) => `
+          <div class="admin-field">
+            <label>${label}</label>
+            ${field==='painPoint'||field==='reframe'||field==='problem'||field==='fomo'
+              ? `<textarea rows="2" data-model="topic" data-idx="${i}" data-field="${field}" oninput="handleFieldInput(event)">${esc(tp[field])}</textarea>`
+              : `<input value="${esc(tp[field])}" data-model="topic" data-idx="${i}" data-field="${field}" oninput="handleFieldInput(event)">`}
+          </div>
+        `).join('')}
+      </div>
+      <div class="admin-field">
+        <label>⑦ FUNCTIONAL PROOF line</label>
+        <textarea rows="2" data-model="topic-fp" data-idx="${i}" data-field="line" oninput="handleFieldInput(event)">${esc(tp.functionalProof.line)}</textarea>
+      </div>
+      <div class="admin-field">
+        <label>⑦ On-screen text (one per line)</label>
+        <textarea rows="3" data-model="topic-fp" data-idx="${i}" data-field="onScreen" oninput="handleFieldInput(event)">${esc(tp.functionalProof.onScreen.join('\n'))}</textarea>
+      </div>
+      <button class="admin-remove" onclick="removeTopic(${i})">Delete this Topic</button>
+    </div>
+  `).join('');
+}
+
+function renderFixedAdmin(){
+  return fixedSteps.map((s, i) => `
+    <div class="admin-item">
+      <div class="admin-row">
+        <div class="admin-field" style="max-width:60px;">
+          <label>Number</label>
+          <input value="${esc(s.num)}" data-model="fixed" data-idx="${i}" data-field="num" oninput="handleFieldInput(event)">
+        </div>
+        <div class="admin-field">
+          <label>Role</label>
+          <input value="${esc(s.role)}" data-model="fixed" data-idx="${i}" data-field="role" oninput="handleFieldInput(event)">
+        </div>
+      </div>
+      <div class="admin-field">
+        <label>Line</label>
+        <textarea rows="2" data-model="fixed" data-idx="${i}" data-field="line" oninput="handleFieldInput(event)">${esc(s.line)}</textarea>
+      </div>
+      <button class="admin-remove" onclick="removeFixed(${i})">Delete this step</button>
+    </div>
+  `).join('');
+}
+
+// Text inputs update the data model and re-render only the live preview
+// (not the admin panel itself), so the input never loses focus while typing.
+function handleFieldInput(e){
+  const el = e.target;
+  const { model, idx, field, angle, type, topic } = el.dataset;
+  const val = el.value;
+
+  if(model === 'type'){ types[idx][field] = val; renderTypeRow(); renderAngleRow(); renderOutput(); }
+  else if(model === 'angle'){ angles[idx][field] = val; renderAngleRow(); renderOutput(); }
+  else if(model === 'topic'){ topics[idx][field] = val; renderTopicRow(); renderOutput(); }
+  else if(model === 'topic-fp'){
+    const tp = topics[idx];
+    tp.functionalProof = tp.functionalProof || { line:'', onScreen:[] };
+    if(field === 'onScreen') tp.functionalProof.onScreen = val.split('\n').map(s=>s.trim()).filter(Boolean);
+    else tp.functionalProof.line = val;
+    renderOutput();
+  }
+  else if(model === 'hook'){
+    hookLibrary[type] = hookLibrary[type] || {};
+    hookLibrary[type][angle] = hookLibrary[type][angle] || {};
+    hookLibrary[type][angle][topic] = val;
+    renderOutput();
+  }
+  else if(model === 'intro-visual'){ introVisualIdeas[idx][field] = val; renderIntroVisual(); }
+  else if(model === 'fixed'){ fixedSteps[idx][field] = val; renderOutput(); }
+}
+
+function addIntroVisual(){
+  introVisualIdeas.push({ num:'', title:'New idea', desc:'', note:'', image:'' });
+  renderAdmin(); renderIntroVisual();
+}
+function removeIntroVisual(i){
+  introVisualIdeas.splice(i,1);
+  renderAdmin(); renderIntroVisual();
+}
+
+function handleTypeAngleToggle(e){
+  const { idx, angle } = e.target.dataset;
+  const t = types[idx];
+  const on = e.target.checked;
+  const has = t.angles.includes(angle);
+  if(on && !has){
+    t.angles.push(angle);
+    hookLibrary[t.id] = hookLibrary[t.id] || {};
+    hookLibrary[t.id][angle] = hookLibrary[t.id][angle] || {};
+    topics.forEach(tp => { if(hookLibrary[t.id][angle][tp.id] === undefined) hookLibrary[t.id][angle][tp.id] = ''; });
+  }
+  if(!on && has) t.angles = t.angles.filter(a => a !== angle);
+  if(t.id === state.type && !t.angles.includes(state.angle)) state.angle = t.angles[0] || '';
+  renderAdmin(); renderAll();
+}
+
+function handleAngleKeyChange(e){
+  const oldKey = e.target.dataset.oldkey;
+  let newKey = e.target.value.trim();
+  if(!newKey || newKey === oldKey || angles[newKey]){ e.target.value = oldKey; return; }
+  angles[newKey] = angles[oldKey];
+  delete angles[oldKey];
+  types.forEach(t => { t.angles = t.angles.map(a => a === oldKey ? newKey : a); });
+  Object.keys(hookLibrary).forEach(typeId => {
+    if(hookLibrary[typeId][oldKey] !== undefined){
+      hookLibrary[typeId][newKey] = hookLibrary[typeId][oldKey];
+      delete hookLibrary[typeId][oldKey];
+    }
+  });
+  if(state.angle === oldKey) state.angle = newKey;
+  renderAdmin(); renderAll();
+}
+
+// Structural changes (add/remove) re-render the admin panel too.
+function addType(){
+  let n = 1; while(types.find(t=>t.id==='NEW'+n)) n++;
+  const newId = 'NEW'+n;
+  types.push({ id:newId, name:'New Hook Type', what:'', angles:[] });
+  hookLibrary[newId] = hookLibrary[newId] || {};
+  renderAdmin(); renderAll();
+}
+function removeType(i){
+  types.splice(i,1);
+  if(!types.find(t=>t.id===state.type)) state.type = types[0] ? types[0].id : '';
+  renderAdmin(); renderAll();
+}
+function addAngle(){
+  let n = 1; while(angles['new'+n]) n++;
+  angles['new'+n] = { name:'New Angle', template:'{result}' };
+  renderAdmin(); renderAll();
+}
+function removeAngle(key){
+  delete angles[key];
+  types.forEach(t => { t.angles = t.angles.filter(a => a !== key); });
+  Object.keys(hookLibrary).forEach(typeId => { delete hookLibrary[typeId][key]; });
+  if(state.angle === key){
+    const type = types.find(t=>t.id===state.type);
+    state.angle = type && type.angles[0] || '';
+  }
+  renderAdmin(); renderAll();
+}
+function addTopic(){
+  let n = 1; while(topics.find(t=>t.id==='new-topic-'+n)) n++;
+  const newId = 'new-topic-'+n;
+  topics.push({ id:newId, icon:'🆕', label:'New Topic', painPoint:'', reframe:'', problem:'', fomo:'', functionalProof:{ line:'', onScreen:[] } });
+  types.forEach(t => {
+    hookLibrary[t.id] = hookLibrary[t.id] || {};
+    t.angles.forEach(angleKey => {
+      hookLibrary[t.id][angleKey] = hookLibrary[t.id][angleKey] || {};
+      if(hookLibrary[t.id][angleKey][newId] === undefined) hookLibrary[t.id][angleKey][newId] = '';
+    });
+  });
+  renderAdmin(); renderAll();
+}
+function removeTopic(i){
+  topics.splice(i,1);
+  if(!topics.find(t=>t.id===state.topic)) state.topic = topics[0] ? topics[0].id : '';
+  renderAdmin(); renderAll();
+}
+function addFixed(){
+  fixedSteps.push({ num:'', role:'NEW STEP', line:'' });
+  renderAdmin(); renderAll();
+}
+function removeFixed(i){
+  fixedSteps.splice(i,1);
+  renderAdmin(); renderAll();
+}
+
+// ── Export / Import ──
+function exportData(){
+  const data = { types, angles, topics, fixedSteps, hookLibrary, introVisualIdeas };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'olive3-site-data.json';
+  a.click();
+}
+function importData(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(data.types){ types.length = 0; types.push(...data.types); }
+      if(data.angles){ Object.keys(angles).forEach(k=>delete angles[k]); Object.assign(angles, data.angles); }
+      if(data.topics){ topics.length = 0; topics.push(...data.topics); }
+      if(data.fixedSteps){ fixedSteps.length = 0; fixedSteps.push(...data.fixedSteps); }
+      if(data.hookLibrary){ Object.keys(hookLibrary).forEach(k=>delete hookLibrary[k]); Object.assign(hookLibrary, data.hookLibrary); }
+      if(data.introVisualIdeas){ introVisualIdeas.length = 0; introVisualIdeas.push(...data.introVisualIdeas); }
+
+      if(!types.find(t=>t.id===state.type)) state.type = types[0] ? types[0].id : '';
+      const curType = types.find(t=>t.id===state.type);
+      if(curType && !curType.angles.includes(state.angle)) state.angle = curType.angles[0] || '';
+      if(!topics.find(t=>t.id===state.topic)) state.topic = topics[0] ? topics[0].id : '';
+
+      renderAdmin(); renderAll();
+    }catch(err){ alert('There was a problem reading that JSON file.'); }
+  };
+  reader.readAsText(file);
+}
+
+renderAll();
+</script>
+</body>
+</html>
