@@ -287,7 +287,19 @@
   .visual-idea .idea-desc{ font-size:12px; line-height:1.5; color:var(--ink-soft); margin:0 0 4px; }
   .visual-idea .idea-note{ font-size:11px; font-style:italic; color:var(--ink-soft); }
   .visual-idea .idea-note.idea-link{ font-style:normal; color:var(--blue); font-weight:600; }
-  .visual-idea .idea-image{ width:100%; border-radius:8px; margin-top:6px; display:block; }
+  .visual-idea .idea-image{ width:100%; border-radius:8px; margin-top:6px; display:block; cursor:zoom-in; }
+  #lightbox{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(20,25,30,0.85);
+    z-index:1000;
+    align-items:center;
+    justify-content:center;
+    padding:32px;
+    cursor:zoom-out;
+  }
+  #lightbox.open{ display:flex; }
+  #lightbox img{ max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.4); }
   .visual-idea.active{ border-color:var(--blue); background:var(--blue-soft); }
   .visual-idea.active .idea-title{ color:var(--blue-deep); }
   .visual-idea.active .idea-desc{ color:var(--ink); }
@@ -511,6 +523,10 @@
 
 </div>
 
+<div id="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" src="" alt="">
+</div>
+
 <!-- ════════════════════════════════════════════════════════
      Everything below is the content data. To change it, just
      edit this JSON block — no other part of the file needs to
@@ -528,7 +544,7 @@
   ],
   "introVisualIdeas": [
     { "num":"01", "title":"Result / Before-After", "desc":"Show the desired result first, then reveal the before.", "note":"\"Do you want results like this?\"", "image":"" },
-    { "num":"02", "title":"Olive Oil vs. Olive3", "desc":"Compare a small shot of olive oil with 3 Olive3 capsules.", "note":"→ Reference image", "image":"" },
+    { "num":"02", "title":"Olive Oil vs. Olive3", "desc":"Compare a small shot of olive oil with 3 Olive3 capsules.", "note":"→ Reference image", "image":"https://picsum.photos/seed/olive3test/600/400" },
     { "num":"03", "title":"Product-first", "desc":"Hold Olive3 up or tear open the packet in the first 3 seconds.", "note":"→ Reference image", "image":"" }
   ],
   "angles": {
@@ -842,6 +858,14 @@ function renderOutput(){
 // Fixed guide, shown as-is regardless of Type/Angle/Topic selection.
 let introVisualSelected = null;
 
+function openLightbox(src){
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+}
+
 function selectIntroVisual(i){
   introVisualSelected = (introVisualSelected === i) ? null : i;
   renderIntroVisual();
@@ -854,7 +878,7 @@ function renderIntroVisual(){
     <button class="visual-idea ${introVisualSelected===i?'active':''}" onclick="selectIntroVisual(${i})">
       <div class="idea-title"><span class="chip-check">✓</span><span class="idea-num">${idea.num}</span>${idea.title}</div>
       <p class="idea-desc">${idea.desc}</p>
-      ${idea.image ? `<img class="idea-image" src="${idea.image}" alt="${idea.title} reference">` : ''}
+      ${idea.image ? `<img class="idea-image" src="${esc(idea.image)}" alt="${esc(idea.title)} reference" data-src="${esc(idea.image)}" onclick="event.stopPropagation(); openLightbox(this.dataset.src)">` : ''}
       ${idea.note && !idea.image ? `<p class="idea-note ${isLink?'idea-link':''}">${idea.note}</p>` : ''}
     </button>
   `;
